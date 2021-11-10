@@ -1,4 +1,5 @@
 // 引入 axios 包
+import router from "@/router";
 import store from "@/store";
 import axios from "axios";
 
@@ -13,6 +14,12 @@ const baseURL = "http://pcapi-xiaotuxian-front-devtest.itheima.net/";
 const instanceWithToken = axios.create({ baseURL }); // 携带Token才可以查看的数据
 const instanceWithoutToken = axios.create({ baseURL }); // 无需携带 Token 就可以看到的数据
 
+// 用于返回 response.data
+const onResponseFulfilled = (response) => response.data;
+
+// 用于捕获错误，传递错误
+const onRejected = (error) => Promise.reject(error);
+
 // 3. 请求拦截器：检查是否携带了Token
 instanceWithToken.interceptors.request.use((config) => {
   // 获取 vuex
@@ -22,4 +29,25 @@ instanceWithToken.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
+}, onRejected);
+
+// 4. 响应拦截器（携带Token）返回 response.data, 处理服务器端返回未授权的情况、捕获错误传递错误
+/**
+ * 第一个参数获取数据
+ * 第二个参数当响应失败时执行的回调
+ */
+instanceWithToken.interceptors.response.use(onResponseFulfilled, (error) => {
+  // 当响应状态码为失败时执行当前回调
+  // 请求未授权，表示没有登陆或登陆状态失效
+  if (error.response.status === 401) {
+    // 清空用户信息
+    store.commit("user/setUser", {});
+    // 跳转到登录页面
+    router.push("/login").then(() => {});
+  }
+  // 返回错误
+  return Promise.reject(error);
 });
+
+// 响应拦截器(不携带token) 返回 response.data、捕获错误传递错误
+instanceWithoutToken.interceptors.response.use(onResponseFulfilled, onRejected);
