@@ -327,6 +327,405 @@ instanceWithToken.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
+}, onRejected);
+~~~
+
+第五步：配置响应拦截器（携带Token）
+
+~~~javascript
+// 4. 响应拦截器（携带Token）返回 response.data, 处理服务器端返回未授权的情况、捕获错误传递错误
+/**
+ * 第一个参数获取数据
+ * 第二个参数当响应失败时执行的回调
+ */
+instanceWithToken.interceptors.response.use(onResponseFulfilled, (error) => {
+  // 当响应状态码为失败时执行当前回调
+  // 请求未授权，表示没有登陆或登陆状态失效
+  if (error.response.status === 401) {
+    // 清空用户信息
+    store.commit("user/setUser", {});
+    // 跳转到登录页面
+    router
+      .push("/login")
+      .then(() => {
+        console.log("页面跳转成功");
+      })
+      .catch(() => {
+        console.log("页面跳转失败");
+      });生成请求函数所需参数
+  }
+  // 返回错误
+  return Promise.reject(error);
 });
 ~~~
 
+第六步：响应拦截器，无Token
+
+~~~javascript
+// 响应拦截器(不携带token) 返回 response.data、捕获错误传递错误
+instanceWithoutToken.interceptors.response.use(onResponseFulfilled, onRejected);
+~~~
+
+第七步：封装公共属性
+
+~~~javascript
+// 6. 用于返回 response.data
+const onResponseFulfilled = (response) => response.data;
+
+// 5. 用于捕获错误，传递错误
+const onRejected = (error) => Promise.reject(error);
+~~~
+
+第八步：生成请求函数所需参数
+
+~~~javascript
+// 生成请求函数所需参数
+const generateRequestConfig = (url, method, data) => ({
+  url,
+  method,
+  [method.toLowerCase() === "get" ? "params" : "data"]: data,
+});
+
+// 请求函数（不带Token）
+export default function requestWitho utToken(url, method, data) {
+  return instanceWithoutToken(generateRequestConfig(url, method, data));
+}
+
+// 请求函数（带Token）
+export function requestWIthToken(url, method, data) {
+  return instanceWithToken(generateRequestConfig(url, method, data));
+}
+~~~
+
+## 配置 Vue-Router 文件
+
+| 路径              | 组件（功能）   | 嵌套级别 |
+| :---------------- | :------------- | :------- |
+| /                 | 首页           | 1级      |
+| /category/:id     | 一级分类       | 1级      |
+| /category/sub/:id | 二级分类       | 1级      |
+| /goods/:id        | 商品详情       | 1级      |
+| /cart             | 购物车         | 1级      |
+| /login            | 登录           | 1级      |
+| /login/callback   | 第三方登录回调 | 1级      |
+| /checkout/order   | 结算           | 1级      |
+| /checkout/pay     | 支付           | 1级      |
+| /pay/callback     | 支付结果       | 1级      |
+| /member/home      | 个人中心       | 1级      |
+| /member/order     | 订单页面       | 1级      |
+| /member/order     | 订单列表       | 2级      |
+| /member/order/:id | 订单详情       | 2级      |
+
+第一步：创建公共组件
+
+`components/AppTopNav.vue`
+
+~~~javascript
+<template><div>AppTopNav</div></template>
+
+<script>
+export default {};
+</script>
+
+<style></style>
+~~~
+
+`components/AppHeader.vue`
+
+~~~javascript
+<template><div>AppHeader</div></template>
+
+<script>
+export default {};
+</script>
+
+<style></style>
+~~~
+
+`components/AppFooter.vue`
+
+~~~javascript
+<template><div>AppFooter</div></template>
+
+<script>
+export default {};
+</script>
+
+<style></style>
+~~~
+
+第二步：将布局组件放入到`views/LayoutTemplate.vue`中
+
+~~~javascript
+<template>
+  <AppTopNav />
+  <AppHeader />
+  <!-- 占位符 -->
+  <slot />
+  <AppFooter />
+</template>
+
+<script>
+import AppTopNav from "@/components/AppTopNav.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
+export default {
+  components: { AppTopNav, AppHeader, AppFooter },
+};
+</script>
+
+<style></style>
+~~~
+
+第三步: 创建页面级路由组件，首页页面组件
+
+并在其中间使用占位符
+
+`views/home/HomePage.vue`
+
+~~~javascript
+<template>
+  <LayoutTemplate>
+    <div>HomePage</div>
+  </LayoutTemplate>
+</template>
+
+<script>
+import LayoutTemplate from "@/views/LayoutTemplate.vue";
+export default {
+  components: { LayoutTemplate },
+  name: "HomePage",
+};
+</script>
+
+<style></style>
+~~~
+
+第四步: 配置首页页面组件的路由规则
+
+`router/index.js`
+
+~~~javascript
+import { createRouter, createWebHashHistory } from "vue-router";
+// 引入主页面
+const HomePage = () =>
+  import(/*webpackChunkName: 'HomePage'*/ "@/views/home/HomePage");
+
+const routes = [
+  {
+    path: "/",
+    name: "HomePage",
+    component: HomePage,
+  },
+];
+
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes,
+});
+
+export default router;
+~~~
+
+## Less 文件配置
+
+`assets/styles/variables.less`: 存储应用公共颜色变量
+
+~~~less
+// 主题
+@xtxColor: #27BA9B;
+// 辅助
+@helpColor: #E26237;
+// 成功
+@sucColor: #1DC779;
+// 警告
+@warnColor: #FFB302;
+// 价格
+@priceColor: #CF4444;
+~~~
+
+`assets/styles/variables.less`: 存储公共的less混入央视
+
+~~~less
+// 鼠标经过上移阴影动画
+.hoverShadow () {
+  transition: all .5s;
+  &:hover {
+    transform: translate3d(0,-3px,0);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+}
+~~~
+
+在 less 代码中若想使用公共变量需要 `@import` 方式引入：
+
+~~~less
+<template>
+  <div class="box">test box</div>
+</template>
+<style scoped lang="less">
+@import "./assets/styles/variables";
+.box {
+  color: @xtxColor;
+}
+</style>
+~~~
+
+但是vue的组件化开发方式，很多组件会使用该公共变量，一个一个引入太过于麻烦了。
+
+所以我们要通过 `webpack loader` 方式自动注入 less。
+
+第一步：通过脚手架工具安装 `style-resources-loader` 插件
+
+~~~powershell
+vue add style-resources-loader;
+~~~
+
+`Vue add` 命令其实就是帮助我们下载包, 运行包，通过命令的方式为项目创建文件或添加代码, 省去固定的配置或操作。
+
+以下命令执行完成后会在应用的根目录下产生 `vue.config.js` 文件 
+
+![22](https://gitee.com/sue201982/mysql/raw/master/img//22.png)
+
+第二步：在`vue.config.js`文件中指定要注入的less文件
+
+~~~javascript
+const path = require("path");
+
+module.exports = {
+  transpileDependencies: true,
+
+  pluginOptions: {
+    "style-resources-loader": {
+      preProcessor: "less",
+      patterns: [
+        path.join(__dirname, "src", "assets", "styles", "mixin.less"),
+        path.join(__dirname, "src", "assets", "styles", "variables.less"),
+      ],
+    },
+  },
+};
+~~~
+
+**诸如完成后要重启服务。**
+
+## 样式清除和公共样式配置
+
+第一步：下载 `normalize.css` 第三方样式重置库 `npm install normalize.css@8.0.1`
+
+![23](https://gitee.com/sue201982/mysql/raw/master/img//23.png)
+
+第二步: 在 `src/assets/styles` 文件件中创建 `common.less` 文件用于存放我们自己的样式重置及公共样式
+
+~~~less
+// 重置样式
+* {
+  box-sizing: border-box;
+ }
+ 
+ html {
+   height: 100%;
+   font-size: 14px;
+ }
+ body {
+   height: 100%;
+   color: #333;
+   min-width: 1240px;
+   font: 1em/1.4 'Microsoft Yahei', 'PingFang SC', 'Avenir', 'Segoe UI', 'Hiragino Sans GB', 'STHeiti', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', sans-serif
+ }
+ 
+ ul,
+ h1,
+ h3,
+ h4,
+ p,
+ dl,
+ dd {
+   padding: 0;
+   margin: 0;
+ }
+ 
+ a {
+   text-decoration: none;
+   color: #333;
+   outline: none;
+ }
+ 
+ i {
+   font-style: normal;
+ }
+ 
+ input[type="text"],
+ input[type="search"],
+ input[type="password"], 
+ input[type="checkbox"]{
+   padding: 0;
+   outline: none;
+   border: none;
+   -webkit-appearance: none;
+   &::placeholder{
+     color: #ccc;
+   }
+ }
+ 
+ img {
+   max-width: 100%;
+   max-height: 100%;
+   vertical-align: middle;
+ }
+ 
+ ul {
+   list-style: none;
+ }
+ 
+ #app {
+   background: #f5f5f5;
+   // user-select: none;
+ }
+ 
+ .container {
+   width: 1240px;
+   margin: 0 auto;
+   position: relative;
+ }
+ 
+ .ellipsis {
+   white-space: nowrap;
+   text-overflow: ellipsis;
+   overflow: hidden;
+ }
+ 
+ .ellipsis-2 {
+   word-break: break-all;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   -webkit-box-orient: vertical;
+   -webkit-line-clamp: 2;
+   overflow: hidden;
+ }
+ 
+ .fl {
+   float: left;
+ }
+ 
+ .fr {
+   float: right;
+ }
+ 
+ .clearfix:after {
+   content: ".";
+   display: block;
+   visibility: hidden;
+   height: 0;
+   line-height: 0;
+   clear: both;
+ }
+~~~
+
+第三步：在 `main.js` 中引入文件
+
+~~~javascript
+// 引入全局样式清除
+import "normalize.css";
+import "@/assets/styles/common.less";
+~~~
