@@ -1,13 +1,19 @@
 <template>
   <LayoutTemplate>
-    <div>HomePage</div>
+    <div class="container">
+      <HomeCategory />
+    </div>
   </LayoutTemplate>
 </template>
 
 <script>
 import LayoutTemplate from "@/views/LayoutTemplate.vue";
+import HomeCategory from "@/views/home/components/HomeCategory.vue";
 export default {
-  components: { LayoutTemplate },
+  components: {
+    LayoutTemplate,
+    HomeCategory,
+  },
   name: "HomePage",
 };
 </script>

@@ -67,7 +67,7 @@ const generateRequestConfig = (url, method, data) => ({
 });
 
 // 请求函数（不带Token）
-export default function requestWitho utToken(url, method, data) {
+export default function requestWithoutToken(url, method, data) {
   return instanceWithoutToken(generateRequestConfig(url, method, data));
 }
 

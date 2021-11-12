@@ -1,5 +1,4 @@
 <template>
-  <div class="box">box</div>
   <router-view />
 </template>
 <script>
