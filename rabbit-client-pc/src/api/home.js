@@ -43,3 +43,19 @@ export function getNewGoods(limit = 4) {
 export function getHomeHot() {
   return requestWithoutToken("/home/hot", "get");
 }
+
+/**
+ * 获取产品区块数据
+ * @returns {Promise<{result: Array<Brand>}>}
+ */
+export function getProduct() {
+  return requestWithoutToken("/home/goods", "get");
+}
+
+/**
+ * 获取最新专题数据
+ * @returns {Promise<{result: Array<Brand>}>}
+ */
+export function getSpecial(limit) {
+  return requestWithoutToken("/home/special", "get", { limit });
+}
