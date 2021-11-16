@@ -26,7 +26,6 @@ export default {
   components: { HomePanel, HomeSkeleton },
   setup() {
     const { result: homeHot, target } = useLazyData(getHomeHot);
-    // getData();
     return {
       homeHot,
       target,
