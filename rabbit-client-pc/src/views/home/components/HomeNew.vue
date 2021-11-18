@@ -29,7 +29,6 @@ export default {
   components: { HomePanel, HomeSkeleton },
   setup() {
     const { target, result: goods } = useLazyData(getNewGoods);
-    console.log(target, 22222);
     return {
       goods,
       target,

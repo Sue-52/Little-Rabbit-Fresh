@@ -1,13 +1,17 @@
-import XtxSkeleton from "@/components/library/XtxSkeleton";
-import XtxCarousel from "@/components/library/XtxCarousel";
-import XtxMore from "@/components/library/XtxMore";
 import lazy from "../directive/lazy";
+
+const importFn = require.context("./", false, /\.vue$/);
+// console.log(importFn.keys());
+const keys = importFn.keys();
 
 export default {
   install(app) {
-    app.component(XtxSkeleton.name, XtxSkeleton);
-    app.component(XtxCarousel.name, XtxCarousel);
-    app.component(XtxMore.name, XtxMore);
+    keys.forEach((item) => {
+      const component = importFn(item).default;
+      // console.log(importFn(item));
+      // console.log(component);
+      app.component(component.name, component);
+    });
     app.directive("lazy", lazy);
   },
 };
