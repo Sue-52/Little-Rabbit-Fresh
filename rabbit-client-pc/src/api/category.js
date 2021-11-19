@@ -40,3 +40,21 @@ export const topCategories = [
   "运动",
   "杂货",
 ];
+
+/**
+ * 根据一级分类ID获取一级分类下的具体信息
+ * @param id 一级分类ID
+ * @return {Promise}
+ */
+export function getTopCategoryById(id) {
+  return requestWithoutToken("/category", "get", { id });
+}
+
+/**
+ * 根据二级分类id获取筛选条件
+ * @param id 二级分类id
+ * @return {Promise}
+ */
+export function getSubCategoryFilterById(id) {
+  return requestWithoutToken("/category/sub/filter", "get", { id });
+}

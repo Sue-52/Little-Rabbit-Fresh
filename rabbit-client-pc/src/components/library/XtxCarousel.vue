@@ -12,10 +12,10 @@
         </RouterLink>
       </li>
     </ul>
-    <a href="javascript:;" class="carousel-btn prev" @click="toggle(-1)">
+    <a href="javascript:" class="carousel-btn prev" @click="toggle(-1)">
       <i class="iconfont icon-angle-left"></i>
     </a>
-    <a href="javascript:;" class="carousel-btn next" @click="toggle(1)">
+    <a href="javascript:" class="carousel-btn next" @click.prevent="toggle(1)">
       <i class="iconfont icon-angle-right"></i>
     </a>
     <div class="carousel-indicator">
@@ -65,7 +65,7 @@ export default {
     //#region 轮播图自动播放
     let timer = null;
     const startPlay = () => {
-      if (props.autoPlay && props.carsousel.length > 1) {
+      if (props.autoPlay && props.carsousel.length > 0) {
         timer = setInterval(() => {
           toggle(1);
         }, props.duration);

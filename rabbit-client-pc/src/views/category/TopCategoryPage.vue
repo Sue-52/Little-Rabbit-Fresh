@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <!-- 面包屑导航栏 -->
     <XtxBread>
       <XtxBreadItem path="/">首页</XtxBreadItem>
       <Transition name="fade-right" mode="out-in">
@@ -20,22 +21,35 @@
       </Transition>
     </XtxBread>
     <!-- 轮播图 -->
-    <XtxCarousel :carsousel="banners" :style="{ height: '500px' }" />
+    <XtxCarousel
+      :autoPlay="true"
+      :carsousel="banners"
+      v-if="banners"
+      :style="{ height: '500px' }"
+    />
+    <!-- 全部分类 -->
+    <ShowSubCategoryList :subCategories="topCategory?.children" />
+    <!-- 底部分类 -->
+    <RecommendGoods />
   </div>
 </template>
 
 <script>
+import RecommendGoods from "@/views/category/components/RecommendGoods.vue";
+import ShowSubCategoryList from "@/views/category/components/ShowSubCategoryList.vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 import useBanners from "@/hooks/useBanners";
 export default {
+  components: { ShowSubCategoryList, RecommendGoods },
   setup() {
     const topCategory = useCategory();
     //#region 轮播图封装
     const { banners, getData } = useBanners();
     getData(2);
     //#endregion
+
     return {
       topCategory,
       banners,

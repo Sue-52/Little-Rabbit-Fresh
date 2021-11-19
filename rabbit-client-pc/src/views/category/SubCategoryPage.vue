@@ -14,18 +14,29 @@
         </XtxBreadItem>
       </Transition>
     </XtxBread>
+    <!-- 筛选分类 -->
+    <SubFilter @onFilterChanged="onParamsChanged" />
+    <XtxCheckbox v-model="test">热门分类</XtxCheckbox>
   </div>
 </template>
 
 <script>
+import SubFilter from "./components/SubFilter.vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 export default {
+  components: { SubFilter },
   setup() {
     const category = useBread();
+    const onParamsChanged = (data) => {
+      console.log(data);
+    };
+    const test = ref(false);
     return {
       category,
+      onParamsChanged,
+      test,
     };
   },
 };

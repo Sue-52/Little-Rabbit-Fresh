@@ -30,6 +30,10 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+  // 点击路由回到顶部
+  scrollBehavior() {
+    return { top: 0 };
+  },
 });
 
 export default router;
