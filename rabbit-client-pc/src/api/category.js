@@ -58,3 +58,12 @@ export function getTopCategoryById(id) {
 export function getSubCategoryFilterById(id) {
   return requestWithoutToken("/category/sub/filter", "get", { id });
 }
+
+/**
+ * 获取商品列表
+ * @param {Object} params 分类id、筛选条件、排序条件、分页信息
+ * @returns
+ */
+export function getGoodsReq(params) {
+  return requestWithoutToken("/category/goods", "post", params);
+}

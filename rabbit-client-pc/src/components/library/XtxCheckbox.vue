@@ -7,30 +7,34 @@
 </template>
 
 <script>
-// import { ref, unref, watch } from "vue";
-import { unref } from "vue";
-import { useVModel } from "@vueuse/core";
+import { ref, unref, watch } from "vue";
+// import { unref } from "vue";
+// import { useVModel } from "@vueuse/core";
 export default {
   name: "XtxCheckbox",
   props: {
+    // 接收v-model传来的值（固定写法）
     modelValue: {
       type: Boolean,
       default: false,
     },
   },
   setup(props, { emit }) {
-    // const isChecked = ref(false);
-    const isChecked = useVModel(props, "modelValue", emit);
+    const isChecked = ref(false);
+    // const isChecked = useVModel(props, "modelValue", emit);
     const toggle = () => {
       isChecked.value = !unref(isChecked);
-      //   emit("update:modelValue", isChecked.value);
+      // 通过emit触发更新数据
+      emit("update:modelValue", isChecked.value);
     };
-    // watch(
-    //   () => props.modelValue,
-    //   () => {
-    //     isChecked.value = props.modelValue;
-    //   }
-    // );
+    // 监听获取的数据
+    watch(
+      () => props.modelValue,
+      () => {
+        // 将isChecked值赋值给modelValue
+        isChecked.value = props.modelValue;
+      }
+    );
     return { isChecked, toggle };
   },
 };
