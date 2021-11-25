@@ -8,7 +8,11 @@ const TopCategoryPage = () =>
   );
 const SubCategoryPage = () =>
   import(
-    /*webpackChunkName: 'webpackChunkName'*/ "@/views/category/SubCategoryPage"
+    /*webpackChunkName: 'SubCategoryPage'*/ "@/views/category/SubCategoryPage"
+  );
+const GoodsDetailPage = () =>
+  import(
+    /*webpackChunkName: 'GoodsDetailPage'*/ "@/views/goods/GoodsDetailPage"
   );
 
 const routes = [
@@ -24,6 +28,10 @@ const routes = [
   {
     path: "/category/sub/:id",
     component: SubCategoryPage,
+  },
+  {
+    path: "/goods/:id",
+    component: GoodsDetailPage,
   },
 ];
 

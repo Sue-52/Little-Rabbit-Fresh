@@ -134,6 +134,7 @@ function useSubCategoryFilter(emit) {
   // 因为在页面切换后，只是将路由变化了，并未重新渲染页面，所以需要在路由变化后，重新获取数据。
   // 1.2 这样就可以实时获取数据
   onBeforeRouteUpdate((to) => getData(to.params.id));
+
   return {
     SubCategoryFilter,
     getData,
