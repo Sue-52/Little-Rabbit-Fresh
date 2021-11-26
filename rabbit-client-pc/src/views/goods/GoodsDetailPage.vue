@@ -31,6 +31,7 @@
         <!-- 右侧 -->
         <div class="spec">
           <GoodsInfo :goods="getDetail" />
+          <GoodsSku :specs="getDetail.specs" :skus="getDetail.skus" />
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -51,6 +52,7 @@
 </template>
 
 <script>
+import GoodsSku from "@/views/goods/components/GoodsSku.vue";
 import GoodsInfo from "@/views/goods/components/GoodsInfo.vue";
 import GoodsImages from "@/views/goods/components/GoodsImages.vue";
 import GoodsSales from "@/views/goods/components/GoodsSales.vue";
@@ -61,7 +63,7 @@ import { useRoute, onBeforeRouteUpdate } from "vue-router";
 
 export default {
   name: "GoodsDetailPage",
-  components: { GoodsRelevant, GoodsImages, GoodsSales, GoodsInfo },
+  components: { GoodsRelevant, GoodsImages, GoodsSales, GoodsInfo, GoodsSku },
   setup() {
     const route = useRoute();
 
