@@ -1,18 +1,16 @@
 <template>
   <div class="goods-image">
-    <!-- 大图 -->
     <div
       class="large"
       :style="{
-        backgroundImage: `url(${images[current]})`,
+        backgroundImage: `url(${images[currentIndex]})`,
         backgroundPositionX: bgPosition.x + 'px',
         backgroundPositionY: bgPosition.y + 'px',
       }"
       v-show="show"
     ></div>
-    <!-- 中图 -->
-    <div class="middle" ref="middleElement">
-      <img :src="images[current]" alt="" />
+    <div class="middle" ref="target">
+      <img :src="images[currentIndex]" alt="" />
       <div
         class="layer"
         v-show="show"
@@ -22,13 +20,12 @@
         }"
       ></div>
     </div>
-    <!-- 小图 -->
     <ul class="small">
       <li
-        @mouseenter="current = index"
         v-for="(item, index) in images"
-        :key="index"
-        :class="{ active: index === current }"
+        :key="item"
+        @mouseenter="currentIndex = index"
+        :class="{ active: currentIndex === index }"
       >
         <img :src="item" alt="" />
       </li>
@@ -48,66 +45,53 @@ export default {
     },
   },
   setup() {
-    // 用于存储当前要显示的图片的索引
-    const current = ref(0);
-    // 用于控制镜片和大图是否显示
+    const currentIndex = ref(0);
+    // 控制大图容器和镜片容器的显示和隐藏
     const show = ref(false);
-    // 用于存储中图元素
-    const middleElement = ref(null);
-    // 获取鼠标和元素之间的位置关系
-    const { isOutside, elementX, elementY } = useMouseInElement(middleElement);
-    // 用于存储镜片元素位置
+    // 用于获取中图DOM对象
+    const target = ref();
+    // 用于获取鼠标和元素之间的关系
+    const { isOutside, elementX, elementY } = useMouseInElement(target);
+    // 用于控制镜片的位置
     const layerPosition = ref({ left: 0, top: 0 });
-    // 用于存储大图背景位置
+    // 用于控制大图位置
     const bgPosition = ref({ x: 0, y: 0 });
-    // 监听鼠标移入中图元素的变化
-    watch([isOutside, elementX, elementY], () => {
-      /*
-       * 如果鼠标在元素外部, 隐藏镜片和大图
-       * if (isOutside.value) show.value = false
-       * 如果鼠标在元素内部, 显示静态和大图
-       * if (!isOutside.value) show.value = true
-       * 下面这句代码等同以上代码
-       * */
-      show.value = !isOutside.value;
-
-      // 鼠标居中位置
-      layerPosition.value = {
-        left: elementX.value - 100,
-        top: elementY.value - 100,
-      };
-      // 对镜片元素的水平方向位置进行限制
-      if (layerPosition.value.left < 0) {
-        layerPosition.value.left = 0;
-      } else if (layerPosition.value.left > 200) {
-        layerPosition.value.left = 200;
+    // 监听鼠标和元素之间的关系的变化
+    watch([isOutside, elementX, elementY], ([isOut, x, y]) => {
+      if (isOut) {
+        // 鼠标移出
+        show.value = false;
+      } else {
+        // 鼠标移入
+        show.value = true;
+        // 控制镜片的位置
+        layerPosition.value = {
+          left: x - 100,
+          top: y - 100,
+        };
+        // 控制镜片水平方向溢出
+        if (layerPosition.value.left < 0) {
+          layerPosition.value.left = 0;
+        } else if (layerPosition.value.left > 200) {
+          layerPosition.value.left = 200;
+        }
+        // 控制镜片垂直方向溢出
+        if (layerPosition.value.top < 0) {
+          layerPosition.value.top = 0;
+        } else if (layerPosition.value.top > 200) {
+          layerPosition.value.top = 200;
+        }
+        // 设置背景大图位置
+        bgPosition.value = {
+          x: -layerPosition.value.left * 2,
+          y: -layerPosition.value.top * 2,
+        };
       }
-      // 对镜片元素的垂直方向位置进行限制
-      if (layerPosition.value.top < 0) {
-        layerPosition.value.top = 0;
-      } else if (layerPosition.value.top > 200) {
-        layerPosition.value.top = 200;
-      }
-
-      // 更新大图背景位置
-      bgPosition.value = {
-        x: -layerPosition.value.left * 2,
-        y: -layerPosition.value.top * 2,
-      };
     });
-
-    return {
-      current,
-      show,
-      middleElement,
-      isOutside,
-      layerPosition,
-      bgPosition,
-    };
+    return { currentIndex, show, target, layerPosition, bgPosition };
   },
 };
 </script>
-
 <style scoped lang="less">
 .goods-image {
   width: 480px;

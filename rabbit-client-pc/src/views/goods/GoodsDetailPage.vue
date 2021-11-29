@@ -31,7 +31,12 @@
         <!-- 右侧 -->
         <div class="spec">
           <GoodsInfo :goods="getDetail" />
-          <GoodsSku :specs="getDetail.specs" :skus="getDetail.skus" />
+          <GoodsSku
+            :specs="getDetail.specs"
+            :skus="getDetail.skus"
+            :skuId="'1369155872197971970'"
+            @on-spec-change="onSpecChanged"
+          />
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -69,8 +74,13 @@ export default {
 
     const { getDetail, getData } = useGoods();
     getData(route.params.id);
+    const onSpecChanged = (sku) => {
+      getDetail.value.price = sku.price;
+      getDetail.value.oldPrice = sku.oldPrice;
+      getDetail.value.inventory = sku.inventory;
+    };
 
-    return { getDetail };
+    return { getDetail, onSpecChanged };
   },
 };
 function useGoods() {
