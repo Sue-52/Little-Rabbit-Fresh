@@ -1,8 +1,8 @@
 <template>
-  <div class="xtx-goods-page">
+  <div class="xtx-goods-page" v-if="getDetail">
     <div class="container">
       <!-- 面包屑 -->
-      <XtxBread v-if="getDetail">
+      <XtxBread>
         <XtxBreadItem path="/">首页</XtxBreadItem>
         <XtxBreadItem :path="`/category/${getDetail.categories[1].id}`">
           {{ getDetail.categories[1].name }}
@@ -15,7 +15,7 @@
         </XtxBreadItem>
       </XtxBread>
       <!-- 商品信息 -->
-      <div class="goods-info" v-if="getDetail">
+      <div class="goods-info">
         <!-- 左侧 -->
         <div class="media">
           <!-- 放大镜 -->
@@ -37,38 +37,68 @@
             :skuId="'1369155872197971970'"
             @on-spec-change="onSpecChanged"
           />
+          <!-- 数量 -->
+          <XtxNumberBox
+            label="数量"
+            v-model="goodsCount"
+            :inventory="getDetail.inventory"
+          />
+          <!-- 添加到购物车按钮 -->
+          <XtxButton type="primary" size="large" style="margin-top: 15px"
+            >加入购物车</XtxButton
+          >
         </div>
       </div>
       <!-- 商品推荐 -->
-      <GoodsRelevant></GoodsRelevant>
+      <GoodsRelevant :goodsId="getDetail.id"></GoodsRelevant>
       <!-- 商品详情 -->
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <div class="goods-tabs">
+            <GoodsTab />
+          </div>
           <!-- 注意事项 -->
-          <div class="goods-warn"></div>
+          <div class="goods-warn">
+            <GoodsWarn />
+          </div>
         </div>
         <!-- 24热榜 -->
-        <div class="goods-aside"></div>
+        <div class="goods-aside">
+          <GoodsHot :type="1" />
+          <GoodsHot :type="2" />
+          <GoodsHot :type="3" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import GoodsWarn from "@/views/goods/components/GoodsWarn.vue";
+import GoodsHot from "@/views/goods/components/GoodsHot.vue";
+import GoodsTab from "@/views/goods/components/GoodsTab.vue";
 import GoodsSku from "@/views/goods/components/GoodsSku.vue";
 import GoodsInfo from "@/views/goods/components/GoodsInfo.vue";
 import GoodsImages from "@/views/goods/components/GoodsImages.vue";
 import GoodsSales from "@/views/goods/components/GoodsSales.vue";
 import { getGoodsDetailId } from "@/api/goods";
 import GoodsRelevant from "@/views/goods/components/GoodsRelevant";
-import { ref } from "vue";
+import { provide, ref } from "vue";
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 
 export default {
   name: "GoodsDetailPage",
-  components: { GoodsRelevant, GoodsImages, GoodsSales, GoodsInfo, GoodsSku },
+  components: {
+    GoodsRelevant,
+    GoodsImages,
+    GoodsSales,
+    GoodsInfo,
+    GoodsSku,
+    GoodsTab,
+    GoodsHot,
+    GoodsWarn,
+  },
   setup() {
     const route = useRoute();
 
@@ -79,8 +109,10 @@ export default {
       getDetail.value.oldPrice = sku.oldPrice;
       getDetail.value.inventory = sku.inventory;
     };
+    const goodsCount = ref(1);
+    provide("getDetail", getDetail);
 
-    return { getDetail, onSpecChanged };
+    return { getDetail, onSpecChanged, goodsCount };
   },
 };
 function useGoods() {

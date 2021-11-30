@@ -4,11 +4,11 @@ import store from "@/store";
 import axios from "axios";
 
 /** 开发地址设置
- * 开发地址：http://pcapi-xiaotuxian-front.itheima.net/
- * 上线地址：http://pcapi-xiaotuxian-front-devtest.itheima.net/
+ * 上线地址：http://pcapi-xiaotuxian-front.itheima.net/
+ * 开发地址：http://pcapi-xiaotuxian-front-devtest.itheima.net/
  */
 // 2. 创建 baseURL 用于存储基准地址
-const baseURL = "http://pcapi-xiaotuxian-front.itheima.net/";
+const baseURL = "http://pcapi-xiaotuxian-front-devtest.itheima.net/";
 
 // 1. 创建一个 axios 实例对象，用于配置项目应用相关请求
 const instanceWithToken = axios.create({ baseURL }); // 携带Token才可以查看的数据
