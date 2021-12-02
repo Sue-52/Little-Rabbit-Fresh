@@ -34,7 +34,7 @@
           <GoodsSku
             :specs="getDetail.specs"
             :skus="getDetail.skus"
-            :skuId="'1369155872197971970'"
+            :skuId="''"
             @on-spec-change="onSpecChanged"
           />
           <!-- 数量 -->

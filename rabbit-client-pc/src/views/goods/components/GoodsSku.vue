@@ -68,6 +68,7 @@ export default {
       sendDataToParent(props.specs, props.skus, emit, pathMap);
     };
     // 默认选中项
+    console.log(pathMap);
     setDefaultSelected(props.skuId, props.skus, props.specs);
     return { updateSelectd, pathMap };
   },
