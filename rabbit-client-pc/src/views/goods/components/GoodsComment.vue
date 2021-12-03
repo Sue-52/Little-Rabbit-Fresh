@@ -100,7 +100,11 @@
       </div>
     </div>
     <!-- 页码 -->
-    <XtxPagination />
+    <XtxPagination
+      v-model:page="reqParams.page"
+      :pageSize="reqParams.pageSize"
+      :counts="commentList.counts"
+    />
   </div>
 </template>
 <script>
@@ -119,8 +123,13 @@ export default {
     //#endregion
 
     //#region List 数据
-    const { commentList, formatNickname, foromatAttrs, updateReqParams } =
-      useGoodsCommentList();
+    const {
+      commentList,
+      reqParams,
+      formatNickname,
+      foromatAttrs,
+      updateReqParams,
+    } = useGoodsCommentList();
     //#endregion
     return {
       commentInfo,
@@ -130,6 +139,7 @@ export default {
       foromatAttrs,
       updateReqParams,
       sortValue,
+      reqParams,
     };
   },
 };
@@ -167,8 +177,8 @@ function useGoodsCommentList() {
   const route = useRoute();
   const reqParams = ref({
     id: route.params.id,
-    page: "",
-    pageSize: "",
+    page: 1,
+    pageSize: 10,
     hasPicture: false,
     tag: "",
     sortField: "",
@@ -189,6 +199,8 @@ function useGoodsCommentList() {
         ...target,
       };
     }
+    // 当筛选条件发生变化后重置页码
+    reqParams.value.page = 1;
   };
   const getListData = () => {
     getCommentListApi(reqParams.value).then((res) => {
@@ -217,6 +229,7 @@ function useGoodsCommentList() {
     formatNickname,
     foromatAttrs,
     updateReqParams,
+    reqParams,
   };
 }
 </script>

@@ -1,37 +1,40 @@
 <template>
-  <div class="container">
-    <XtxBread>
-      <XtxBreadItem path="/">首页</XtxBreadItem>
-      <XtxBreadItem :path="`/category/${category?.TopCategory?.id}`">
-        {{ category?.TopCategory?.name }}
-      </XtxBreadItem>
-      <Transition name="fade-right" mode="out-in">
-        <XtxBreadItem
-          :key="category?.SubCategory?.id"
-          :path="`/category/sub/${category?.SubCategory?.id}`"
-        >
-          {{ category?.SubCategory?.name }}
+  <LayoutTemplate>
+    <div class="container">
+      <XtxBread>
+        <XtxBreadItem path="/">首页</XtxBreadItem>
+        <XtxBreadItem :path="`/category/${category?.TopCategory?.id}`">
+          {{ category?.TopCategory?.name }}
         </XtxBreadItem>
-      </Transition>
-    </XtxBread>
-    <!-- 筛选分类 -->
-    <SubFilter @onFilterChanged="updateReqParams" />
-    <div class="goods-list">
-      <!-- 排序组件使用 -->
-      <SubSort @onSortParamsChanged="updateReqParams" />
-      <!-- 商品数据 -->
-      <GoodsList :goods="result.items" v-if="result" />
-      <!-- 显示加载状态 -->
-      <XtxInfiniteLoading
-        :loading="loading"
-        :finished="finished"
-        @infinite="loadMore"
-      />
+        <Transition name="fade-right" mode="out-in">
+          <XtxBreadItem
+            :key="category?.SubCategory?.id"
+            :path="`/category/sub/${category?.SubCategory?.id}`"
+          >
+            {{ category?.SubCategory?.name }}
+          </XtxBreadItem>
+        </Transition>
+      </XtxBread>
+      <!-- 筛选分类 -->
+      <SubFilter @onFilterChanged="updateReqParams" />
+      <div class="goods-list">
+        <!-- 排序组件使用 -->
+        <SubSort @onSortParamsChanged="updateReqParams" />
+        <!-- 商品数据 -->
+        <GoodsList :goods="result.items" v-if="result" />
+        <!-- 显示加载状态 -->
+        <XtxInfiniteLoading
+          :loading="loading"
+          :finished="finished"
+          @infinite="loadMore"
+        />
+      </div>
     </div>
-  </div>
+  </LayoutTemplate>
 </template>
 
 <script>
+import LayoutTemplate from "../LayoutTemplate.vue";
 import GoodsList from "@/views/category/components/GoodsList.vue";
 import SubSort from "@/views/category/components/SubSort.vue";
 import SubFilter from "@/views/category/components/SubFilter.vue";
@@ -40,7 +43,7 @@ import { onBeforeRouteUpdate, useRoute } from "vue-router";
 import { computed, ref, watch } from "vue";
 import { getGoodsReq } from "@/api/category";
 export default {
-  components: { SubFilter, SubSort, GoodsList },
+  components: { SubFilter, SubSort, GoodsList, LayoutTemplate },
   setup() {
     const category = useBread();
     // 获取筛选数据

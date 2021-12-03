@@ -1,12 +1,8 @@
 <template>
-  <LayoutTemplate>
-    <router-view />
-  </LayoutTemplate>
+  <router-view />
 </template>
 <script>
-import LayoutTemplate from "./views/LayoutTemplate.vue";
 export default {
-  components: { LayoutTemplate },
   name: "App",
   setup() {},
 };

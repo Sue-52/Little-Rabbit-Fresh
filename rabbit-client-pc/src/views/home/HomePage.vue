@@ -1,21 +1,24 @@
 <template>
-  <div class="container">
-    <HomeCategory />
-    <HomeBanner />
-    <!-- 新鲜好物 -->
-    <HomeNew />
-    <!-- 人气推荐 -->
-    <HomeHot />
-    <!-- 热门品牌 -->
-    <HomeBrand />
-    <!-- 产品区块 -->
-    <HomeProduct />
-    <!-- 最新专题 -->
-    <HomeSpecial />
-  </div>
+  <LayoutTemplate>
+    <div class="container">
+      <HomeCategory />
+      <HomeBanner />
+      <!-- 新鲜好物 -->
+      <HomeNew />
+      <!-- 人气推荐 -->
+      <HomeHot />
+      <!-- 热门品牌 -->
+      <HomeBrand />
+      <!-- 产品区块 -->
+      <HomeProduct />
+      <!-- 最新专题 -->
+      <HomeSpecial />
+    </div>
+  </LayoutTemplate>
 </template>
 
 <script>
+import LayoutTemplate from "../LayoutTemplate.vue";
 import HomeSpecial from "./components/HomeSpecial.vue";
 import HomeProduct from "./components/HomeProduct.vue";
 import HomeBrand from "./components/HomeBrand.vue";
@@ -32,6 +35,7 @@ export default {
     HomeBrand,
     HomeProduct,
     HomeSpecial,
+    LayoutTemplate,
   },
   name: "HomePage",
 };

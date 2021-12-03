@@ -1,80 +1,83 @@
 <template>
-  <div class="xtx-goods-page" v-if="getDetail">
-    <div class="container">
-      <!-- 面包屑 -->
-      <XtxBread>
-        <XtxBreadItem path="/">首页</XtxBreadItem>
-        <XtxBreadItem :path="`/category/${getDetail.categories[1].id}`">
-          {{ getDetail.categories[1].name }}
-        </XtxBreadItem>
-        <XtxBreadItem :path="`/category/sub/${getDetail.categories[0].id}`">
-          {{ getDetail.categories[0].name }}
-        </XtxBreadItem>
-        <XtxBreadItem>
-          {{ getDetail.name }}
-        </XtxBreadItem>
-      </XtxBread>
-      <!-- 商品信息 -->
-      <div class="goods-info">
-        <!-- 左侧 -->
-        <div class="media">
-          <!-- 放大镜 -->
-          <GoodsImages :images="getDetail.mainPictures" />
-          <!-- 商品销售信息 -->
-          <GoodsSales
-            :salesCount="getDetail.salesCount"
-            :commentCount="getDetail.commentCount"
-            :collectCount="getDetail.collectCount"
-            :brandName="getDetail.brand.name"
-          />
-        </div>
-        <!-- 右侧 -->
-        <div class="spec">
-          <GoodsInfo :goods="getDetail" />
-          <GoodsSku
-            :specs="getDetail.specs"
-            :skus="getDetail.skus"
-            :skuId="''"
-            @on-spec-change="onSpecChanged"
-          />
-          <!-- 数量 -->
-          <XtxNumberBox
-            label="数量"
-            v-model="goodsCount"
-            :inventory="getDetail.inventory"
-          />
-          <!-- 添加到购物车按钮 -->
-          <XtxButton type="primary" size="large" style="margin-top: 15px"
-            >加入购物车</XtxButton
-          >
-        </div>
-      </div>
-      <!-- 商品推荐 -->
-      <GoodsRelevant :goodsId="getDetail.id"></GoodsRelevant>
-      <!-- 商品详情 -->
-      <div class="goods-footer">
-        <div class="goods-article">
-          <!-- 商品+评价 -->
-          <div class="goods-tabs">
-            <GoodsTab />
+  <LayoutTemplate>
+    <div class="xtx-goods-page" v-if="getDetail">
+      <div class="container">
+        <!-- 面包屑 -->
+        <XtxBread>
+          <XtxBreadItem path="/">首页</XtxBreadItem>
+          <XtxBreadItem :path="`/category/${getDetail.categories[1].id}`">
+            {{ getDetail.categories[1].name }}
+          </XtxBreadItem>
+          <XtxBreadItem :path="`/category/sub/${getDetail.categories[0].id}`">
+            {{ getDetail.categories[0].name }}
+          </XtxBreadItem>
+          <XtxBreadItem>
+            {{ getDetail.name }}
+          </XtxBreadItem>
+        </XtxBread>
+        <!-- 商品信息 -->
+        <div class="goods-info">
+          <!-- 左侧 -->
+          <div class="media">
+            <!-- 放大镜 -->
+            <GoodsImages :images="getDetail.mainPictures" />
+            <!-- 商品销售信息 -->
+            <GoodsSales
+              :salesCount="getDetail.salesCount"
+              :commentCount="getDetail.commentCount"
+              :collectCount="getDetail.collectCount"
+              :brandName="getDetail.brand.name"
+            />
           </div>
-          <!-- 注意事项 -->
-          <div class="goods-warn">
-            <GoodsWarn />
+          <!-- 右侧 -->
+          <div class="spec">
+            <GoodsInfo :goods="getDetail" />
+            <GoodsSku
+              :specs="getDetail.specs"
+              :skus="getDetail.skus"
+              :skuId="''"
+              @on-spec-change="onSpecChanged"
+            />
+            <!-- 数量 -->
+            <XtxNumberBox
+              label="数量"
+              v-model="goodsCount"
+              :inventory="getDetail.inventory"
+            />
+            <!-- 添加到购物车按钮 -->
+            <XtxButton type="primary" size="large" style="margin-top: 15px"
+              >加入购物车</XtxButton
+            >
           </div>
         </div>
-        <!-- 24热榜 -->
-        <div class="goods-aside">
-          <GoodsHot :type="1" />
-          <GoodsHot :type="2" />
-          <GoodsHot :type="3" />
+        <!-- 商品推荐 -->
+        <GoodsRelevant :goodsId="getDetail.id"></GoodsRelevant>
+        <!-- 商品详情 -->
+        <div class="goods-footer">
+          <div class="goods-article">
+            <!-- 商品+评价 -->
+            <div class="goods-tabs">
+              <GoodsTab />
+            </div>
+            <!-- 注意事项 -->
+            <div class="goods-warn">
+              <GoodsWarn />
+            </div>
+          </div>
+          <!-- 24热榜 -->
+          <div class="goods-aside">
+            <GoodsHot :type="1" />
+            <GoodsHot :type="2" />
+            <GoodsHot :type="3" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </LayoutTemplate>
 </template>
 
 <script>
+import LayoutTemplate from "../LayoutTemplate.vue";
 import GoodsWarn from "@/views/goods/components/GoodsWarn.vue";
 import GoodsHot from "@/views/goods/components/GoodsHot.vue";
 import GoodsTab from "@/views/goods/components/GoodsTab.vue";
@@ -98,6 +101,7 @@ export default {
     GoodsTab,
     GoodsHot,
     GoodsWarn,
+    LayoutTemplate,
   },
   setup() {
     const route = useRoute();
