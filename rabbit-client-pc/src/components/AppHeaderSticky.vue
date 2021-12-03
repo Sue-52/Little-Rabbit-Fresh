@@ -21,9 +21,7 @@ export default {
   name: "AppHeaderSticky",
   components: { AppHeaderNav },
   setup() {
-    // const { y: scrollTop } = useWindowScroll();
     return { scrollTop: useScrollTop() };
-    // return { scrollTop };
   },
 };
 </script>
@@ -35,15 +33,16 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 999;
+  z-index: -1;
   background-color: #fff;
   border-bottom: 1px solid #e4e4e4;
-  transition: translateY(-100%);
+  transition: translateY(-200%);
   opacity: 0;
 
   &.show {
     transform: none;
     opacity: 1;
+    z-index: 100;
     transition: all 0.3s linear;
   }
 
