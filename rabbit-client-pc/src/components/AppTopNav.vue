@@ -6,10 +6,10 @@
         <template v-if="user.profile.token">
           <li>
             <a href="javascript:"
-              ><i class="iconfont icon-user"></i>{{ user.profile.accont }}</a
+              ><i class="iconfont icon-user"></i>{{ user.profile.account }}</a
             >
           </li>
-          <li><a href="javascript:">退出登录</a></li>
+          <li><a href="javascript:" @click="logout">退出登录</a></li>
         </template>
         <template v-else>
           <li><RouterLink to="/login">请先登录</RouterLink></li>
@@ -29,16 +29,23 @@
 </template>
 
 <script>
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 export default {
   name: "AppTopNav",
   setup() {
     const store = useStore();
+    const router = useRouter();
     const user = store.state.user;
+    const logout = () => {
+      store.commit("user/setUser", {});
+      router.push("/login");
+    };
 
     return {
       user,
+      logout,
     };
   },
 };

@@ -29,7 +29,6 @@
       </div>
     </div>
   </section>
-  <button @click="handleClick">测试Message</button>
   <LoginFooter />
 </template>
 
@@ -38,16 +37,13 @@ import LoginForm from "@/views/login/components/LoginForm.vue";
 import LoginHeader from "@/views/login/components/LoginHeader";
 import LoginFooter from "@/views/login/components/LoginFooter";
 import { ref } from "vue-demi";
-import Message from "@/components/library/Message";
+
 export default {
   name: "LoginPage",
   components: { LoginFooter, LoginHeader, LoginForm },
   setup() {
     const activeName = ref("account");
-    const handleClick = () => {
-      Message({ type: "success", text: "登录成功" });
-    };
-    return { activeName, handleClick };
+    return { activeName };
   },
 };
 </script>

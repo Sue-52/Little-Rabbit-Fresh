@@ -17,9 +17,9 @@ export default function Message({ type, text }) {
   render(Vnode, container);
   // 定时器
   clearTimeout(timer);
-  console.log(Vnode.component);
   timer = setTimeout(() => {
     // render(null, container);
     Vnode.component.proxy.show = false;
+    container._vnode = null;
   }, 3000);
 }

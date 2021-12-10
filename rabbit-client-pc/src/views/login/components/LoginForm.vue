@@ -78,7 +78,13 @@
                 v-model="codeField"
                 placeholder="请输入验证码"
               />
-              <span class="code">发送验证码</span>
+              <span
+                class="code"
+                :class="{ disable: isActive }"
+                @click="getMsgCode"
+              >
+                {{ isActive ? `剩余${count}秒` : "发送验证码" }}
+              </span>
             </div>
             <div class="error" v-if="codeError">
               <i class="iconfont icon-warning"></i> {{ codeError }}
@@ -123,29 +129,65 @@ import {
   mobile,
   code,
 } from "@/utils/vee-validate-schema";
+import { getLoginMsgCode, loginByAccount, loginByMobile } from "@/api/user";
+import Message from "@/components/library/Message";
+import useCountDown from "@/hooks/useCountDown";
+import useLoginAfter from "@/hooks/useLoginAfter";
 
 export default {
   name: "LoginForm",
   setup() {
     const isMessage = ref(false);
+    const { loginSuccess, loginError } = useLoginAfter();
     // 获取账号登陆表单验证
     const { accountFormHandleSubmit, ...accountFormValid } =
       useAccountFormValidate();
-    const accountFromSubmit = accountFormHandleSubmit((values) => {
-      console.log(values);
-    });
+    const accountFromSubmit = accountFormHandleSubmit(
+      ({ account, password }) => {
+        // 当点击按钮后发起请求
+        loginByAccount({ account, password })
+          .then(loginSuccess)
+          .catch(loginError);
+      }
+    );
+
     // 获取手机登录表单验证
-    const { mobileFormHandleSumbit, ...mobileFormValid } =
+    const { mobileFormHandleSumbit, mobileIsValidate, ...mobileFormValid } =
       useMobileFormValidate();
-    const mobileFromSubmit = mobileFormHandleSumbit((values) => {
-      console.log(values);
+    const mobileFromSubmit = mobileFormHandleSumbit(({ mobile, code }) => {
+      loginByMobile({ mobile, code })
+        // 登录成功
+        .then(loginSuccess)
+        // 登录失败
+        .catch(loginError);
     });
+    // 倒计时
+    const { count, start, isActive } = useCountDown();
+    // 获取验证码
+    const getMsgCode = async () => {
+      // 用户是否输入手机号
+      const { isValid, mobile } = await mobileIsValidate();
+      // 发送请求验证码
+      if (isValid && !isActive.value) {
+        try {
+          getLoginMsgCode(mobile);
+          Message({ type: "success", text: "验证码发送成功" });
+          start(60);
+          // 开启倒计时
+        } catch (error) {
+          Message({ type: "success", text: error.response.data.message });
+        }
+      }
+    };
     return {
       isMessage,
       accountFromSubmit,
       ...accountFormValid,
       mobileFromSubmit,
       ...mobileFormValid,
+      getMsgCode,
+      isActive,
+      count,
     };
   },
 };
@@ -186,10 +228,21 @@ function useMobileFormValidate() {
       isAgree,
     },
   });
-  const { value: mobileField, errorMessage: mobileError } = useField("mobile");
+
+  const {
+    value: mobileField,
+    errorMessage: mobileError,
+    validate: mobileValidate,
+  } = useField("mobile");
   const { value: codeField, errorMessage: codeError } = useField("code");
   const { value: mobileIsAgreeField, errorMessage: mobileIsAgreeError } =
     useField("isAgree");
+
+  // 单独验证手机号
+  const mobileIsValidate = async () => {
+    const { valid } = await mobileValidate();
+    return { isValid: valid, mobile: mobileField.value };
+  };
 
   return {
     mobileField,
@@ -199,6 +252,7 @@ function useMobileFormValidate() {
     mobileIsAgreeField,
     mobileIsAgreeError,
     mobileFormHandleSumbit,
+    mobileIsValidate,
   };
 }
 </script>
@@ -261,7 +315,7 @@ function useMobileFormValidate() {
           background: #f5f5f5;
           color: #666;
           width: 90px;
-          height: 34px;
+          height: 33px;
           cursor: pointer;
         }
         .code.disabled {
