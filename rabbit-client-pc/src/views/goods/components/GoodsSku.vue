@@ -192,7 +192,13 @@ function sendDataToParent(specs, skus, emit, pathMap) {
       price: target.price,
       oldPrice: target.oldPrice,
       inventory: target.inventory,
+      attrsText: target.specs
+        .map((spec) => `${spec.name}: ${spec.valueName}`)
+        .join(" "),
     });
+  } else {
+    // 规格不完整时
+    emit("onSpecHalfChanged");
   }
 }
 </script>

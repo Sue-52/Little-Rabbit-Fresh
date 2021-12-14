@@ -37,6 +37,7 @@
               :skus="getDetail.skus"
               :skuId="''"
               @on-spec-change="onSpecChanged"
+              @onSpecHalfChanged="getDetail.currentSkuId = null"
             />
             <!-- 数量 -->
             <XtxNumberBox
@@ -45,7 +46,11 @@
               :inventory="getDetail.inventory"
             />
             <!-- 添加到购物车按钮 -->
-            <XtxButton type="primary" size="large" style="margin-top: 15px"
+            <XtxButton
+              @click="addCart"
+              type="primary"
+              size="large"
+              style="margin-top: 15px"
               >加入购物车</XtxButton
             >
           </div>
@@ -87,6 +92,7 @@ import GoodsImages from "@/views/goods/components/GoodsImages.vue";
 import GoodsSales from "@/views/goods/components/GoodsSales.vue";
 import { getGoodsDetailId } from "@/api/goods";
 import GoodsRelevant from "@/views/goods/components/GoodsRelevant";
+import Message from "@/components/library/Message";
 import { provide, ref } from "vue";
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 
@@ -112,11 +118,46 @@ export default {
       getDetail.value.price = sku.price;
       getDetail.value.oldPrice = sku.oldPrice;
       getDetail.value.inventory = sku.inventory;
+      getDetail.value.currentSkuId = sku.skuId;
+      getDetail.value.attrsText = sku.attrsText;
+      console.log(sku);
     };
     const goodsCount = ref(1);
     provide("getDetail", getDetail);
+    // 手机商品信息
+    const addCart = () => {
+      // 判断用户是否选择了规格
+      if (!getDetail.value.currentSelectedSkuId) {
+        return Message({ type: "error", text: "请选择商品规格" });
+      }
+      const goods = {
+        // 商品id
+        id: getDetail.value.id,
+        // 商品 skuId
+        skuId: getDetail.value.currentSkuId,
+        // 商品名称
+        name: getDetail.value.name,
+        // 商品规格属性文字
+        attrsText: getDetail.value.attrsText,
+        // 商品图片
+        picture: getDetail.value.mainPictures[0],
+        // 商品原价
+        price: getDetail.value.oldPrice,
+        // 商品现价
+        nowPrice: getDetail.value.price,
+        // 是否选中
+        selected: true,
+        // 商品库存
+        stock: getDetail.value.inventory,
+        // 用户选择的商品数量
+        count: goodsCount.value,
+        // 是否为有效商品
+        isEffective: true,
+      };
+      console.log(goods);
+    };
 
-    return { getDetail, onSpecChanged, goodsCount };
+    return { getDetail, onSpecChanged, goodsCount, addCart };
   },
 };
 function useGoods() {
