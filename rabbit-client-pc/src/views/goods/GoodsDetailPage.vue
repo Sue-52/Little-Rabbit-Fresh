@@ -95,6 +95,7 @@ import GoodsRelevant from "@/views/goods/components/GoodsRelevant";
 import Message from "@/components/library/Message";
 import { provide, ref } from "vue";
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "GoodsDetailPage",
@@ -111,7 +112,7 @@ export default {
   },
   setup() {
     const route = useRoute();
-
+    const store = useStore();
     const { getDetail, getData } = useGoods();
     getData(route.params.id);
     const onSpecChanged = (sku) => {
@@ -127,7 +128,7 @@ export default {
     // 手机商品信息
     const addCart = () => {
       // 判断用户是否选择了规格
-      if (!getDetail.value.currentSelectedSkuId) {
+      if (!getDetail.value.currentSkuId) {
         return Message({ type: "error", text: "请选择商品规格" });
       }
       const goods = {
@@ -154,7 +155,8 @@ export default {
         // 是否为有效商品
         isEffective: true,
       };
-      console.log(goods);
+      // console.log(goods);
+      store.dispatch("cart/addGoodsToCart", goods);
     };
 
     return { getDetail, onSpecChanged, goodsCount, addCart };
