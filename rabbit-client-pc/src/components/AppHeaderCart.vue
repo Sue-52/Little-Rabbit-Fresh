@@ -1,9 +1,9 @@
 <template>
   <div class="cart">
-    <a class="curr" href="#">
+    <RouterLink class="curr" to="/cart">
       <i class="iconfont icon-cart"></i><em>{{ effectiveGoodsCount }}</em>
-    </a>
-    <div class="layer">
+    </RouterLink>
+    <div class="layer" v-if="!isCartPage && effectiveGoodsCount > 0">
       <div class="list">
         <div class="item" v-for="item in effectiveGoodsList" :key="item.id">
           <RouterLink :to="`/goods/${item.id}`">
@@ -25,16 +25,19 @@
       </div>
       <div class="foot">
         <div class="total">
-          <p>{{ effectiveGoodsCount }}</p>
+          <p>共 {{ effectiveGoodsCount }} 件商品</p>
           <p>&yen;{{ effectiveGoodsPrice }}</p>
         </div>
-        <XtxButton type="plain">去购物车结算</XtxButton>
+        <XtxButton type="plain">
+          <RouterLink to="/cart">去购物车结算</RouterLink>
+        </XtxButton>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { computed } from "vue-demi";
+import { computed, ref } from "vue-demi";
+import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import Message from "./library/Message";
 
@@ -42,6 +45,9 @@ export default {
   name: "AppHeaderCart",
   setup() {
     const store = useStore();
+    const route = useRoute();
+    // 判断页面
+    const isCartPage = ref(route.path === "/cart");
     const effectiveGoodsList = computed(
       () => store.getters["cart/effectiveGoodsList"]
     );
@@ -55,11 +61,15 @@ export default {
       store.dispatch("cart/deleteGoodsToCart", skuId);
       Message({ type: "success", text: "删除成功" });
     };
+    onBeforeRouteUpdate((to) => {
+      isCartPage.value = to.path === "/cart";
+    });
     return {
       effectiveGoodsList,
       effectiveGoodsPrice,
       effectiveGoodsCount,
       deleteGoodsCart,
+      isCartPage,
     };
   },
 };

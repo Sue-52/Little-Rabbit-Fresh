@@ -1,3 +1,4 @@
+import { updateLocalCart } from "@/api/cart";
 // eslint-disable-next-line no-unused-vars
 export default {
   namespaced: true,
@@ -29,6 +30,13 @@ export default {
         ];
       }
     },
+    updateGoodsBySkuId(state, partOfGoods) {
+      // 根据skuId查找商品
+      let goods = state.list.find((item) => item.skuId === partOfGoods.skuId);
+      if (goods) {
+        goods = { ...goods, ...partOfGoods };
+      }
+    },
   },
   actions: {
     addGoodsToCart({ rootState, commit }, goods) {
@@ -45,6 +53,25 @@ export default {
       } else {
         // 未登录
         commit("deleteGoodsToCart", skuId);
+      }
+    },
+    // 更新购物车中的商品信息 (库存, 是否有效, 现价)
+    updateLocalCart({ commit, rootState, state }) {
+      if (rootState.user.profile.token) {
+        // 已登录
+      } else {
+        // 未登录
+        const cartListPromise = state.list.map(({ skuId, id }) =>
+          updateLocalCart({ skuId, id })
+        );
+        // 批量获取多个请求的数据
+        Promise.all(cartListPromise).then((data) => {
+          // 遍历响应结果
+          data.forEach((item, index) => {
+            item.result.skuId = state.list[index].skuId;
+            commit("updateGoodsBySkuId", item.result);
+          });
+        });
       }
     },
   },
@@ -64,6 +91,28 @@ export default {
     effectiveGoodsPrice(state, getters) {
       return getters.effectiveGoodsList.reduce(
         (price, item) => price + Number(item.nowPrice) * item.count,
+        0
+      );
+    },
+    // 无效商品列表
+    invalidGoodsList(state) {
+      return state.list.filter((item) => !item.isEffective || item.stock === 0);
+    },
+    // 用户选择商品列表
+    selectedGoodsList(state, getters) {
+      return getters.effectiveGoodsList.filter((item) => item.iselected);
+    },
+    // 选择总价
+    selectedGoodsPrice(state, getters) {
+      return getters.selectedGoodsList.reduce(
+        (price, item) => price + Number(item.nowPrice) * item.count,
+        0
+      );
+    },
+    // 选择数量
+    selectedGoodsCount(state, getters) {
+      return getters.selectedGoodsList.reduce(
+        (count, item) => count + item.count,
         0
       );
     },
