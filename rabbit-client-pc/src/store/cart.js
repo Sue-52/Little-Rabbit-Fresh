@@ -74,6 +74,26 @@ export default {
         });
       }
     },
+    // 更新选中状态
+    updateSelectedGoods({ rootState, commit }, state) {
+      if (rootState.user.profile.token) {
+        // 已登录
+      } else {
+        // 未登录
+        commit("updateGoodsBySkuId", state);
+      }
+    },
+    // 更新全选状态
+    updateAllButtonStatus({ rootState, commit, getters }, state) {
+      if (rootState.user.profile.token) {
+        // 已登录
+      } else {
+        // 未登录
+        getters.effectiveGoodsList.forEach((item) => {
+          commit("updateGoodsBySkuId", { skuId: item.skuId, selected: state });
+        });
+      }
+    },
   },
   getters: {
     // 可购买商品列表 (有效商品 + 商品库存数量大于0)
@@ -114,6 +134,13 @@ export default {
       return getters.selectedGoodsList.reduce(
         (count, item) => count + item.count,
         0
+      );
+    },
+    // 全选
+    selectAllButtonStatus(state, getters) {
+      return (
+        getters.effectiveGoodsList.length > 0 &&
+        getters.effectiveGoodsList.length === getters.selectedGoodsList.length
       );
     },
   },
